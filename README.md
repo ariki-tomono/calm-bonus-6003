@@ -51,6 +51,13 @@ Cloudflare Workers で動作する HTTP ワーカーアプリケーションで�
 
 詳細は [docs/routes.md](docs/routes.md) を参照してください。
 
+## ドキュメント
+
+| ファイル | 内容 |
+|------|------|
+| [docs/routes.md](docs/routes.md) | ルート詳細（エンドポイント、パラメータ、レスポンス例） |
+| [docs/styling.md](docs/styling.md) | スタイリング（Pico CSS の導入・カスタム CSS） |
+
 ## セットアップ
 
 ```bash
