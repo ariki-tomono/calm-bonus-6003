@@ -1,4 +1,4 @@
-import { html } from './utils/response.js';
+import { page } from './utils/response.js';
 import { handleHello } from './routes/hello.js';
 import { handleTime } from './routes/time.js';
 import { handleJson } from './routes/json.js';
@@ -43,38 +43,55 @@ export default {
 		}
 
 		// 404
-		return html(`
-<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>404 Not Found</title></head>
-<body>
-  <h1>404 - ページが見つかりません</h1>
-  <p>リクエストされたパス: <code>${escapeHtml(path)}</code></p>
-  <p><a href="/">← インデックスに戻る</a></p>
-</body>
-</html>
+		return page('404 Not Found', `
+			<h1>404 - ページが見つかりません</h1>
+			<p>リクエストされたパス: <code>${escapeHtml(path)}</code></p>
 		`, 404);
 	},
 };
 
 function renderIndex() {
-	return html(`
-<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>Cloudflare Workers サンプル集</title></head>
-<body>
-  <h1>⚡ Cloudflare Workers サンプル集</h1>
-  <p>各機能へのリンク:</p>
-  <ul>
-    <li><a href="/hello">/hello</a> - 挨拶メッセージ（クエリパラメータ対応）</li>
-    <li><a href="/time">/time</a> - 現在時刻を表示</li>
-    <li><a href="/json">/json</a> - リクエスト情報を JSON で返す</li>
-    <li><a href="/redirect">/redirect</a> - リダイレクトサービス</li>
-    <li><a href="/shorten">/shorten</a> - URL短縮サービス（KV使用）</li>
-    <li><a href="/notes">/notes</a> - メモ帳（D1データベース使用）</li>
-  </ul>
-</body>
-</html>
+	return page('Cloudflare Workers サンプル集', `
+		<hgroup>
+			<h1>⚡ Cloudflare Workers サンプル集</h1>
+			<p>Cloudflare Workers の各種機能を学ぶためのサンプル集です</p>
+		</hgroup>
+
+		<div class="grid">
+			<article>
+				<header>🖐 Hello</header>
+				<p>挨拶メッセージを返します。クエリパラメータで名前を変更可能。</p>
+				<footer><a href="/hello" role="button">試す</a></footer>
+			</article>
+			<article>
+				<header>🕐 現在時刻</header>
+				<p>JST / UTC の現在時刻を表示します。</p>
+				<footer><a href="/time" role="button">試す</a></footer>
+			</article>
+			<article>
+				<header>📋 リクエスト情報</header>
+				<p>IP、国、User-Agent などを JSON で返します。</p>
+				<footer><a href="/json" role="button">試す</a></footer>
+			</article>
+		</div>
+
+		<div class="grid">
+			<article>
+				<header>🔗 リダイレクト</header>
+				<p>登録済みのキーで外部サイトへリダイレクトします。</p>
+				<footer><a href="/redirect" role="button">試す</a></footer>
+			</article>
+			<article>
+				<header>✂️ URL短縮 <kbd>KV</kbd></header>
+				<p>長い URL を短いコードに変換して保存します。</p>
+				<footer><a href="/shorten" role="button">試す</a></footer>
+			</article>
+			<article>
+				<header>📝 メモ帳 <kbd>D1</kbd></header>
+				<p>メモの作成・閲覧・編集・削除ができます。</p>
+				<footer><a href="/notes" role="button">試す</a></footer>
+			</article>
+		</div>
 	`);
 }
 

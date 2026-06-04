@@ -1,4 +1,4 @@
-import { html } from '../utils/response.js';
+import { page } from '../utils/response.js';
 
 const REDIRECT_MAP = {
 	github: 'https://github.com',
@@ -14,22 +14,21 @@ export function handleRedirect(request) {
 		return Response.redirect(REDIRECT_MAP[target], 302);
 	}
 
-	// リダイレクト先一覧を表示
-	const links = Object.entries(REDIRECT_MAP)
-		.map(([key, value]) => `<li><a href="/redirect?to=${key}">${key}</a> → ${value}</li>`)
-		.join('\n');
+	const rows = Object.entries(REDIRECT_MAP)
+		.map(([key, value]) => `
+			<tr>
+				<td><code>${key}</code></td>
+				<td><a href="${value}">${value}</a></td>
+				<td><a href="/redirect?to=${key}" role="button" class="outline secondary">Go</a></td>
+			</tr>`)
+		.join('');
 
-	return html(`
-<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>リダイレクト</title></head>
-<body>
-  <h1>🔗 リダイレクトサービス</h1>
-  <p>使い方: <code>/redirect?to=キー名</code></p>
-  <h2>利用可能なリダイレクト先:</h2>
-  <ul>${links}</ul>
-  <p><a href="/">← インデックスに戻る</a></p>
-</body>
-</html>
+	return page('リダイレクト', `
+		<h1>🔗 リダイレクトサービス</h1>
+		<p>使い方: <code>/redirect?to=キー名</code></p>
+		<table>
+			<thead><tr><th>キー</th><th>リダイレクト先</th><th>実行</th></tr></thead>
+			<tbody>${rows}</tbody>
+		</table>
 	`);
 }

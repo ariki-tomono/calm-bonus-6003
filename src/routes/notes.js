@@ -1,20 +1,10 @@
-import { html, json } from '../utils/response.js';
+import { page, json } from '../utils/response.js';
 
 /**
  * メモ帳 API + UI
- *
- * GET    /notes          → メモ一覧（HTML）
- * GET    /notes/api      → メモ一覧（JSON）
- * GET    /notes/new      → 新規作成フォーム
- * POST   /notes          → メモ作成
- * GET    /notes/:id      → メモ詳細
- * GET    /notes/:id/edit → 編集フォーム
- * POST   /notes/:id      → メモ更新
- * POST   /notes/:id/delete → メモ削除
  */
 
 export async function handleNotes(request, env, path) {
-	const url = new URL(request.url);
 	const method = request.method;
 
 	// /notes/api - JSON API
@@ -57,7 +47,7 @@ export async function handleNotes(request, env, path) {
 		return listNotes(env);
 	}
 
-	return html('<h1>404</h1>', 404);
+	return page('404', '<h1>404</h1>', 404);
 }
 
 // --- JSON API ---
@@ -79,38 +69,35 @@ async function listNotes(env) {
 	const rows = results
 		.map(
 			(note) => `
-		<tr>
-			<td><a href="/notes/${note.id}">${escapeHtml(note.title)}</a></td>
-			<td>${escapeHtml(note.updated_at)}</td>
-			<td>
-				<a href="/notes/${note.id}/edit">編集</a>
-				<form method="POST" action="/notes/${note.id}/delete" style="display:inline">
-					<button type="submit" onclick="return confirm('削除しますか？')">削除</button>
-				</form>
-			</td>
-		</tr>`
+			<tr>
+				<td><a href="/notes/${note.id}">${escapeHtml(note.title)}</a></td>
+				<td><small>${escapeHtml(note.updated_at)}</small></td>
+				<td style="white-space:nowrap;">
+					<a href="/notes/${note.id}/edit" role="button" style="margin-bottom:0;">編集</a>
+					<form method="POST" action="/notes/${note.id}/delete" style="display:inline; margin:0;">
+						<button type="submit" style="margin-bottom:0; min-width:0;" onclick="return confirm('削除しますか？')">削除</button>
+					</form>
+				</td>
+			</tr>`
 		)
 		.join('');
 
-	return html(`
-<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>メモ帳</title></head>
-<body>
-  <h1>📝 メモ帳</h1>
-  <p><a href="/notes/new">＋ 新規作成</a></p>
-  ${
-		results.length === 0
-			? '<p>メモがありません。新規作成してください。</p>'
-			: `<table border="1" cellpadding="8">
-      <tr><th>タイトル</th><th>更新日時</th><th>操作</th></tr>
-      ${rows}
-    </table>`
-	}
-  <hr>
-  <p><a href="/notes/api">JSON API</a> | <a href="/">← インデックスに戻る</a></p>
-</body>
-</html>
+	return page('メモ帳', `
+		<hgroup>
+			<h1>📝 メモ帳</h1>
+			<p>D1 データベースを使用したメモの CRUD アプリ</p>
+		</hgroup>
+		<p><a href="/notes/new" role="button">＋ 新規作成</a></p>
+		${
+			results.length === 0
+				? '<p>メモがありません。新規作成してください。</p>'
+				: `<figure><table>
+				<thead><tr><th>タイトル</th><th>更新日時</th><th>操作</th></tr></thead>
+				<tbody>${rows}</tbody>
+			</table></figure>`
+		}
+		<hr>
+		<p><small><a href="/notes/api">JSON API で取得</a></small></p>
 	`);
 }
 
@@ -118,32 +105,20 @@ async function showNote(env, id) {
 	const note = await env.NOTES_DB.prepare('SELECT * FROM notes WHERE id = ?').bind(id).first();
 
 	if (!note) {
-		return html(`
-<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>404</title></head>
-<body>
-  <h1>メモが見つかりません</h1>
-  <p><a href="/notes">← メモ一覧に戻る</a></p>
-</body>
-</html>
+		return page('404', `
+			<h1>メモが見つかりません</h1>
+			<p><a href="/notes">← メモ一覧に戻る</a></p>
 		`, 404);
 	}
 
-	return html(`
-<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>${escapeHtml(note.title)}</title></head>
-<body>
-  <h1>${escapeHtml(note.title)}</h1>
-  <pre style="white-space: pre-wrap; background: #f5f5f5; padding: 1em;">${escapeHtml(note.content)}</pre>
-  <p>作成: ${escapeHtml(note.created_at)} | 更新: ${escapeHtml(note.updated_at)}</p>
-  <p>
-    <a href="/notes/${note.id}/edit">編集</a> |
-    <a href="/notes">← メモ一覧に戻る</a>
-  </p>
-</body>
-</html>
+	return page(escapeHtml(note.title), `
+		<h1>${escapeHtml(note.title)}</h1>
+		<pre><code>${escapeHtml(note.content)}</code></pre>
+		<p><small>作成: ${escapeHtml(note.created_at)} | 更新: ${escapeHtml(note.updated_at)}</small></p>
+		<div role="group">
+			<a href="/notes/${note.id}/edit" role="button" class="outline">編集</a>
+			<a href="/notes" role="button" class="outline secondary">← 一覧に戻る</a>
+		</div>
 	`);
 }
 
@@ -153,15 +128,9 @@ async function createNote(request, env) {
 	const content = formData.get('content') || '';
 
 	if (!title) {
-		return html(`
-<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>エラー</title></head>
-<body>
-  <h1>⚠️ タイトルを入力してください</h1>
-  <p><a href="/notes/new">← 戻る</a></p>
-</body>
-</html>
+		return page('エラー', `
+			<h1>⚠️ タイトルを入力してください</h1>
+			<p><a href="/notes/new">← 戻る</a></p>
 		`, 400);
 	}
 
@@ -176,15 +145,9 @@ async function updateNote(request, env, id) {
 	const content = formData.get('content') || '';
 
 	if (!title) {
-		return html(`
-<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>エラー</title></head>
-<body>
-  <h1>⚠️ タイトルを入力してください</h1>
-  <p><a href="/notes/${id}/edit">← 戻る</a></p>
-</body>
-</html>
+		return page('エラー', `
+			<h1>⚠️ タイトルを入力してください</h1>
+			<p><a href="/notes/${id}/edit">← 戻る</a></p>
 		`, 400);
 	}
 
@@ -206,26 +169,16 @@ async function deleteNote(env, id) {
 // --- フォーム ---
 
 function renderNewForm() {
-	return html(`
-<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>新規メモ作成</title></head>
-<body>
-  <h1>📝 新規メモ作成</h1>
-  <form method="POST" action="/notes">
-    <p>
-      <label for="title">タイトル:</label><br>
-      <input type="text" id="title" name="title" size="50" required>
-    </p>
-    <p>
-      <label for="content">内容:</label><br>
-      <textarea id="content" name="content" rows="10" cols="50"></textarea>
-    </p>
-    <button type="submit">作成する</button>
-  </form>
-  <p><a href="/notes">← メモ一覧に戻る</a></p>
-</body>
-</html>
+	return page('新規メモ作成', `
+		<h1>📝 新規メモ作成</h1>
+		<form method="POST" action="/notes">
+			<label for="title">タイトル</label>
+			<input type="text" id="title" name="title" required>
+			<label for="content">内容</label>
+			<textarea id="content" name="content" rows="10"></textarea>
+			<button type="submit">作成する</button>
+		</form>
+		<p><a href="/notes">← メモ一覧に戻る</a></p>
 	`);
 }
 
@@ -233,29 +186,19 @@ async function renderEditForm(env, id) {
 	const note = await env.NOTES_DB.prepare('SELECT * FROM notes WHERE id = ?').bind(id).first();
 
 	if (!note) {
-		return html('<h1>メモが見つかりません</h1><p><a href="/notes">← 戻る</a></p>', 404);
+		return page('404', '<h1>メモが見つかりません</h1><p><a href="/notes">← 戻る</a></p>', 404);
 	}
 
-	return html(`
-<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>メモ編集</title></head>
-<body>
-  <h1>📝 メモ編集</h1>
-  <form method="POST" action="/notes/${note.id}">
-    <p>
-      <label for="title">タイトル:</label><br>
-      <input type="text" id="title" name="title" value="${escapeHtml(note.title)}" size="50" required>
-    </p>
-    <p>
-      <label for="content">内容:</label><br>
-      <textarea id="content" name="content" rows="10" cols="50">${escapeHtml(note.content)}</textarea>
-    </p>
-    <button type="submit">更新する</button>
-  </form>
-  <p><a href="/notes/${note.id}">← キャンセル</a></p>
-</body>
-</html>
+	return page('メモ編集', `
+		<h1>📝 メモ編集</h1>
+		<form method="POST" action="/notes/${note.id}">
+			<label for="title">タイトル</label>
+			<input type="text" id="title" name="title" value="${escapeHtml(note.title)}" required>
+			<label for="content">内容</label>
+			<textarea id="content" name="content" rows="10">${escapeHtml(note.content)}</textarea>
+			<button type="submit">更新する</button>
+		</form>
+		<p><a href="/notes/${note.id}">← キャンセル</a></p>
 	`);
 }
 
