@@ -23,7 +23,8 @@ Cloudflare Workers で動作する HTTP ワーカーアプリケーションで�
 │   │   ├── hello.js          # /hello - 挨拶メッセージ
 │   │   ├── time.js           # /time - 現在時刻
 │   │   ├── json.js           # /json - リクエスト情報
-│   │   └── redirect.js       # /redirect - リダイレクト
+│   │   ├── redirect.js       # /redirect - リダイレクト
+│   │   └── shorten.js        # /shorten - URL短縮サービス
 │   └── utils/
 │       └── response.js       # 共通レスポンスヘルパー
 ├── docs/
@@ -35,13 +36,15 @@ Cloudflare Workers で動作する HTTP ワーカーアプリケーションで�
 
 ## ルート一覧
 
-| パス | 機能 | 詳細 |
+| パス | 機能 | 使用サービス |
 |------|------|------|
-| `/` | インデックス | 全機能へのリンク一覧 |
-| `/hello` | 挨拶 | `?name=名前` 対応 |
-| `/time` | 現在時刻 | JST / UTC 表示 |
-| `/json` | リクエスト情報 | IP・国・UA を JSON で返す |
-| `/redirect` | リダイレクト | `?to=キー名` で外部サイトへ |
+| `/` | インデックス | Workers のみ |
+| `/hello` | 挨拶（`?name=名前` 対応） | Workers のみ |
+| `/time` | 現在時刻（JST / UTC） | Workers のみ |
+| `/json` | リクエスト情報を JSON で返す | Workers のみ |
+| `/redirect` | リダイレクト（`?to=キー名`） | Workers のみ |
+| `/shorten` | URL短縮サービス | Workers + KV |
+| `/s/:code` | 短縮URLからリダイレクト | Workers + KV |
 
 詳細は [docs/routes.md](docs/routes.md) を参照してください。
 

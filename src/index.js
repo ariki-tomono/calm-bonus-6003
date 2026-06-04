@@ -3,6 +3,7 @@ import { handleHello } from './routes/hello.js';
 import { handleTime } from './routes/time.js';
 import { handleJson } from './routes/json.js';
 import { handleRedirect } from './routes/redirect.js';
+import { handleShorten, handleRedirectShort } from './routes/shorten.js';
 
 // ルート定義
 const routes = {
@@ -10,12 +11,19 @@ const routes = {
 	'/time': handleTime,
 	'/json': handleJson,
 	'/redirect': handleRedirect,
+	'/shorten': handleShorten,
 };
 
 export default {
 	async fetch(request, env, ctx) {
 		const url = new URL(request.url);
 		const path = url.pathname;
+
+		// 短縮URLリダイレクト（/s/:code）
+		const shortMatch = path.match(/^\/s\/([a-zA-Z0-9]+)$/);
+		if (shortMatch) {
+			return handleRedirectShort(request, env, shortMatch[1]);
+		}
 
 		// ルートマッチング
 		const handler = routes[path];
@@ -56,6 +64,7 @@ function renderIndex() {
     <li><a href="/time">/time</a> - 現在時刻を表示</li>
     <li><a href="/json">/json</a> - リクエスト情報を JSON で返す</li>
     <li><a href="/redirect">/redirect</a> - リダイレクトサービス</li>
+    <li><a href="/shorten">/shorten</a> - URL短縮サービス（KV使用）</li>
   </ul>
 </body>
 </html>

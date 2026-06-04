@@ -1,25 +1,32 @@
 {
-  "name": "calm-bonus-6003",
-  "main": "src/index.js",
-  "workers_dev": true,
-  "preview_urls": true,
-  "compatibility_date": "2024-10-11",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "observability": {
-    "enabled": true,
-    "head_sampling_rate": 1,
-    "logs": {
-      "enabled": true,
-      "head_sampling_rate": 1,
-      "persist": true,
-      "invocation_logs": true
-    },
-    "traces": {
-      "enabled": false,
-      "persist": true,
-      "head_sampling_rate": 1
-    }
-  }
+	"name": "calm-bonus-6003",
+	"main": "src/index.js",
+	"workers_dev": true,
+	"preview_urls": true,
+	"compatibility_date": "2024-10-11",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 1,
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"persist": true,
+			"invocation_logs": true
+		},
+		"traces": {
+			"enabled": false,
+			"persist": true,
+			"head_sampling_rate": 1
+		}
+	},
+	"kv_namespaces": [
+		{
+			"binding": "URL_SHORTENER",
+			"id": "bf580e2f11c54aa7a188dad717b38240",
+			"remote": true
+		}
+	]
 }

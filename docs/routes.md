@@ -82,6 +82,37 @@ JST と UTC の現在時刻を HTML で表示します。
 
 ---
 
+## `/shorten` - URL短縮サービス
+
+| 項目 | 内容 |
+|------|------|
+| ファイル | `src/routes/shorten.js` |
+| メソッド | GET（フォーム表示）/ POST（短縮URL生成） |
+| 使用サービス | Workers KV（`URL_SHORTENER`） |
+
+長い URL を短いコード付きの URL に変換して KV に保存します。
+
+### 使い方
+
+1. `/shorten` にアクセスしてフォームを表示
+2. 短縮したい URL を入力して送信
+3. `/s/xxxxxx` 形式の短縮URLが生成される
+
+### 例
+
+- `POST /shorten` (body: `url=https://example.com/very/long/path`)
+  → 短縮URL `/s/aBc123` を生成
+- `GET /s/aBc123`
+  → `https://example.com/very/long/path` にリダイレクト（302）
+
+### KV データ構造
+
+| キー | 値 |
+|------|------|
+| `aBc123`（ランダム6文字） | 元の URL |
+
+---
+
 ## 404 - Not Found
 
 定義されていないパスにアクセスした場合、404 ページを返します。
