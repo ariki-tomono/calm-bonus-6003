@@ -4,6 +4,7 @@ import { handleTime } from './routes/time.js';
 import { handleJson } from './routes/json.js';
 import { handleRedirect } from './routes/redirect.js';
 import { handleShorten, handleRedirectShort } from './routes/shorten.js';
+import { handleNotes } from './routes/notes.js';
 
 // ルート定義
 const routes = {
@@ -23,6 +24,11 @@ export default {
 		const shortMatch = path.match(/^\/s\/([a-zA-Z0-9]+)$/);
 		if (shortMatch) {
 			return handleRedirectShort(request, env, shortMatch[1]);
+		}
+
+		// メモ帳（/notes 以下のすべてのパス）
+		if (path === '/notes' || path.startsWith('/notes/')) {
+			return handleNotes(request, env, path);
 		}
 
 		// ルートマッチング
@@ -65,6 +71,7 @@ function renderIndex() {
     <li><a href="/json">/json</a> - リクエスト情報を JSON で返す</li>
     <li><a href="/redirect">/redirect</a> - リダイレクトサービス</li>
     <li><a href="/shorten">/shorten</a> - URL短縮サービス（KV使用）</li>
+    <li><a href="/notes">/notes</a> - メモ帳（D1データベース使用）</li>
   </ul>
 </body>
 </html>

@@ -24,11 +24,13 @@ Cloudflare Workers で動作する HTTP ワーカーアプリケーションで�
 │   │   ├── time.js           # /time - 現在時刻
 │   │   ├── json.js           # /json - リクエスト情報
 │   │   ├── redirect.js       # /redirect - リダイレクト
-│   │   └── shorten.js        # /shorten - URL短縮サービス
+│   │   ├── shorten.js        # /shorten - URL短縮サービス
+│   │   └── notes.js          # /notes - メモ帳
 │   └── utils/
 │       └── response.js       # 共通レスポンスヘルパー
 ├── docs/
 │   └── routes.md             # ルート詳細ドキュメント
+├── schema.sql                # D1 テーブル定義
 ├── package.json
 ├── wrangler.jsonc
 └── README.md
@@ -45,6 +47,7 @@ Cloudflare Workers で動作する HTTP ワーカーアプリケーションで�
 | `/redirect` | リダイレクト（`?to=キー名`） | Workers のみ |
 | `/shorten` | URL短縮サービス | Workers + KV |
 | `/s/:code` | 短縮URLからリダイレクト | Workers + KV |
+| `/notes` | メモ帳（CRUD） | Workers + D1 |
 
 詳細は [docs/routes.md](docs/routes.md) を参照してください。
 

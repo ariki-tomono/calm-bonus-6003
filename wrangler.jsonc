@@ -28,5 +28,13 @@
 			"id": "bf580e2f11c54aa7a188dad717b38240",
 			"remote": true
 		}
+	],
+	"d1_databases": [
+		{
+			"binding": "NOTES_DB",
+			"database_name": "notes-db",
+			"database_id": "7414af99-d4e7-48c7-83cf-85b8b578e815",
+			"remote": true
+		}
 	]
 }
