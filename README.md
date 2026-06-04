@@ -1,10 +1,10 @@
 # calm-bonus-6003
 
-Cloudflare Workers で動作するシンプルな HTTP ワーカーアプリケーションです。
+Cloudflare Workers で動作する HTTP ワーカーアプリケーションです。複数の初級サンプル機能をルーティングで束ねています。
 
 ## 概要
 
-リクエストを受け取り「Hello Cloudflare! Hello World!」を返すシンプルな Worker です。
+`src/index.js` がルーターとして動作し、各機能を `src/routes/` 以下のモジュールに振り分けます。
 
 ## 技術スタック
 
@@ -18,11 +18,32 @@ Cloudflare Workers で動作するシンプルな HTTP ワーカーアプリケ�
 ```
 .
 ├── src/
-│   └── index.js        # Worker のエントリーポイント
+│   ├── index.js              # ルーター（リクエスト振り分け + インデックスページ）
+│   ├── routes/
+│   │   ├── hello.js          # /hello - 挨拶メッセージ
+│   │   ├── time.js           # /time - 現在時刻
+│   │   ├── json.js           # /json - リクエスト情報
+│   │   └── redirect.js       # /redirect - リダイレクト
+│   └── utils/
+│       └── response.js       # 共通レスポンスヘルパー
+├── docs/
+│   └── routes.md             # ルート詳細ドキュメント
 ├── package.json
-├── wrangler.jsonc       # Wrangler 設定ファイル
+├── wrangler.jsonc
 └── README.md
 ```
+
+## ルート一覧
+
+| パス | 機能 | 詳細 |
+|------|------|------|
+| `/` | インデックス | 全機能へのリンク一覧 |
+| `/hello` | 挨拶 | `?name=名前` 対応 |
+| `/time` | 現在時刻 | JST / UTC 表示 |
+| `/json` | リクエスト情報 | IP・国・UA を JSON で返す |
+| `/redirect` | リダイレクト | `?to=キー名` で外部サイトへ |
+
+詳細は [docs/routes.md](docs/routes.md) を参照してください。
 
 ## セットアップ
 
