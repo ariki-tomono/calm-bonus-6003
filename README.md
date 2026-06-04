@@ -46,6 +46,24 @@ Cloudflare にデプロイします：
 npm run deploy
 ```
 
+## 開発フロー
+
+1. `src/index.js` を編集して機能を追加・変更する
+2. ローカルで動作確認する
+   ```bash
+   npx wrangler dev
+   ```
+3. Cloudflare にデプロイする
+   ```bash
+   npx wrangler deploy
+   ```
+4. Git にコミットして GitHub に反映する
+   ```bash
+   git add .
+   git commit -m "変更内容の説明"
+   git push
+   ```
+
 ## 設定
 
 | 項目 | 値 |
