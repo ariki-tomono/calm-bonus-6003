@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "wrangler.jsonc 保存時に型生成を促す",
+      "trigger": "PostFileSave",
+      "matcher": "wrangler\\.(jsonc|json|toml)$",
+      "action": {
+        "type": "agent",
+        "prompt": "wrangler の設定ファイル（bindings 定義）が変更されました。bindings（KV / D1 / R2 など）に変更があった場合は、型補完を最新に保つため `npx wrangler types` の実行をユーザーに促してください。bindings に変更がなければ何もする必要はありません。"
+      }
+    }
+  ]
+}

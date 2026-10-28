@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "ルート変更時にドキュメント同期を促す",
+      "trigger": "PostFileSave",
+      "matcher": "src/(index\\.js|routes/.*\\.js)$",
+      "action": {
+        "type": "agent",
+        "prompt": "ルーター（src/index.js）またはルートハンドラ（src/routes/*.js）が変更されました。新しいルートの追加、既存ルートのパスやパラメータの変更、削除があった場合は、`docs/routes.md` と `README.md` のルート一覧の更新が必要かユーザーに確認してください。レスポンス内部の表示変更のみでルートの構成に変化がない場合は、ドキュメント更新は不要です。"
+      }
+    }
+  ]
+}
